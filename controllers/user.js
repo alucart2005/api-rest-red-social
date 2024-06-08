@@ -5,7 +5,15 @@ const pruebaUser = (req, res) => {
   })
 };
 
+// Registro de usuarios
+const register = (req,res) =>{
+  return res.status(200).json({
+    message: "Accion de registro de usuario"
+  })
+}
+
 //Exportar acciones
 module.exports={
-  pruebaUser
+  pruebaUser,
+  register
 }
