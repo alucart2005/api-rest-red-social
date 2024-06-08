@@ -1,15 +1,13 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const connection = async()=>{
+const connection = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/mi_redsocial")
-    console.log("Conectado correctamente a mi_redsocial")
+    await mongoose.connect("mongodb://localhost:27017/mi_redsocial");
+    console.log("Connection to mi_redsocial established");
   } catch (error) {
-    console.log(error)
-    throw new Error ("No se ha podido conectar a la base de datos !!!")
+    console.log(error);
+    throw new Error("Database connection failed!");
   }
-}
+};
 
-module.exports={
-  connection
-}
+module.exports = connection;
