@@ -1,3 +1,6 @@
+// importar dependencias y modulos
+const User = require("../models/user")
+
 // acciones de prueba
 const pruebaUser = (req, res) => {
   return res.status(200).send({
@@ -7,8 +10,26 @@ const pruebaUser = (req, res) => {
 
 // Registro de usuarios
 const register = (req,res) =>{
+  // Recoger datos de la peticion
+  const params = req.body;
+  
+
+  // Comprobar que me llegan bien (+Validacion)
+
+
+  // Control de usuarios duplicados
+
+
+  // Cifrar la contraseña
+
+
+  // Guardar usuario en la base de datos
+
+
+  // Devolver resultado
   return res.status(200).json({
-    message: "Accion de registro de usuario"
+    message: "Accion de registro de usuario",
+    params
   })
 }
 

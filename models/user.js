@@ -14,6 +14,10 @@ const UserSchema = Schema({
     type: String,
     require: true,
   },
+  password: {
+    type: String,
+    require: true,
+  },
   role: {
     type: String,
     default: "role_user",
@@ -28,8 +32,7 @@ const UserSchema = Schema({
   },
 });
 
-module.exports=model("User",UserSchema,"users")
-
+module.exports = model("User", UserSchema, "users");
 
 /*  VERSION 2
 const { Schema, model } = require("mongoose");
