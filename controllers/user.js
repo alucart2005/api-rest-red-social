@@ -1,5 +1,6 @@
 // importar dependencias y modulos
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -38,6 +39,8 @@ const register = async (req, res) => {
         });
       }
       // Cifrar la contraseña
+      let pwd = await bcrypt.hash(user_to_save.password, 10);
+      console.log(pwd);
 
       // Guardar usuario en la base de datos
 
