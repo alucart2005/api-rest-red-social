@@ -9,33 +9,52 @@ const pruebaUser = (req, res) => {
 };
 
 // Registro de usuarios
-const register = (req, res) => {
-  // Recoger datos de la peticion
-  const params = req.body;
+const register = async (req, res) => {
+  try {
+    // Recoger datos de la peticion
+    const params = req.body;
 
-  // Comprobar que me llegan bien (+Validacion)
-  if (!params.name || !params.email || !params.password || !params.nick) {
-    return res.status(400).json({
+    // Comprobar que me llegan bien (+Validacion)
+    if (!params.name || !params.email || !params.password || !params.nick) {
+      return res.status(400).json({
+        status: "error",
+        message: "Faltan datos por enviar",
+      });
+    } else {
+      // Crear objeto de usuario
+      let user_to_save = new User(params);
+
+      // Control de usuarios duplicados
+      const users = await User.find({
+        $or: [
+          { email: user_to_save.email.toLowerCase() },
+          { nick: user_to_save.nick.toLowerCase() },
+        ],
+      });
+      if (users && users.length >= 1) {
+        return res.status(409).json({
+          status: "error",
+          message: "El usuario ya existe",
+        });
+      }
+      // Cifrar la contraseña
+
+      // Guardar usuario en la base de datos
+
+      // Devolver resultado
+
+      return res.status(200).json({
+        status: "Success",
+        message: "Accion de registro de usuario",
+        user_to_save,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
       status: "error",
-      message: "Faltan datos por enviar",
+      message: "Error en la consulta de usuarios",
     });
   }
-
-  // Crear objeto de usuario
-  let user_to_save = new User(params)
-
-  // Control de usuarios duplicados
-
-  // Cifrar la contraseña
-
-  // Guardar usuario en la base de datos
-
-  // Devolver resultado
-  return res.status(200).json({
-    status: "Success",
-    message: "Accion de registro de usuario",
-    user_to_save
-  });
 };
 
 //Exportar acciones
