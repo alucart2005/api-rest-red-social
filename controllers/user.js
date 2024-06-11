@@ -99,30 +99,52 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    
+    // Recoger parametros
+    let params = req.body;
+    if (!params.email || !params.password) {
+      return res.status(400).send({
+        status: "error",
+        mensaje: "Faltan datos por enviar",
+      });
+    }
+
+    // buscar en la db si existe
+    const user = await User.findOne({ email: params.email });
+    //.select({password: 0,});
+    if (!user) {
+      return res.status(404).send({
+        status: "error",
+        message: "Usuario no existe !!!",
+      });
+    }
+
+    // Comprobar contraseña
+    let pwd = bcrypt.compareSync(params.password, user.password);
+    console.log(pwd)
+    if (!pwd) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password errado",
+      });
+    }
+
+    // Devolver Token
+
+    // Eliminar password del objeto
+
+    // Deveolver datos del usuario
+
+    return res.status(200).json({
+      status: "Success",
+      message: "Accion de login",
+      user,
+    });
   } catch (error) {
-    
+    return res.status(500).json({
+      status: "error",
+      message: "error login",
+    });
   }
-
-  // Recoger parametros
-
-
-  // buscar en la db si existe
-
-
-  // Comprobar contraseña
-
-
-  // Devolver Token
-
-
-  // Deveolver datos del usuario
-
-
-  return res.status(200).json({
-    status: "Success",
-    message: "Accion de login",
-  });
 };
 
 //Exportar acciones
