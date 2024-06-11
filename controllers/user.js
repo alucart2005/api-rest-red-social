@@ -37,7 +37,6 @@ const register = async (req, res) => {
       }
       // Cifrar la contraseña
       let pwd = await bcrypt.hash(params.password, 10);
-      console.log(pwd);
       params.password = pwd;
 
       // Crear objeto de usuario
@@ -47,12 +46,7 @@ const register = async (req, res) => {
       // Guardar usuario en la base de datos
       try {
         const userStored = await user_to_save.save();
-        if (!userStored) {
-          return res.status(500).json({
-            status: "error",
-            message: "Error al guardar usuario",
-          });
-        }
+        // Devolver resultado
         return res.status(200).json({
           status: "success",
           message: "Usuario registrado correctamente",
@@ -94,14 +88,6 @@ const register = async (req, res) => {
         });
       }
       */
-
-      // Devolver resultado
-
-      return res.status(200).json({
-        status: "Success",
-        message: "Accion de registro de usuario",
-        user_to_save,
-      });
     }
   } catch (error) {
     return res.status(500).json({
@@ -111,8 +97,31 @@ const register = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  // Recoger parametros
+
+
+  // buscar en la db si existe
+
+
+  // Comprobar contraseña
+
+
+  // Devolver Token
+
+
+  // Deveolver datos del usuario
+
+
+  return res.status(200).json({
+    status: "Success",
+    message: "Accion de login",
+  });
+};
+
 //Exportar acciones
 module.exports = {
   pruebaUser,
   register,
+  login,
 };
