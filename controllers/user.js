@@ -1,6 +1,11 @@
 // importar dependencias y modulos
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
+
+// Imortar modelos
+const User = require("../models/user");
+
+// Importar servicios
+const jwt = require("../services/jwt")
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -129,11 +134,9 @@ const login = async (req, res) => {
     }
 
     // Devolver Token
-    const token = false;
-    // Eliminar password del objeto
+    const token = jwt.createToken(user);
 
-    // Deveolver datos del usuario
-
+    // Develver datos del usuario
     return res.status(200).json({
       status: "Success",
       message: "Te has identificado correctamente",
