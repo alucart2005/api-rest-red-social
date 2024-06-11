@@ -119,8 +119,8 @@ const login = async (req, res) => {
     }
 
     // Comprobar contraseña
-    let pwd = bcrypt.compareSync(params.password, user.password);
-    console.log(pwd)
+    const pwd = bcrypt.compareSync(params.password, user.password);
+    console.log(pwd);
     if (!pwd) {
       return res.status(400).json({
         status: "error",
@@ -129,15 +129,19 @@ const login = async (req, res) => {
     }
 
     // Devolver Token
-
+    const token = false;
     // Eliminar password del objeto
 
     // Deveolver datos del usuario
 
     return res.status(200).json({
       status: "Success",
-      message: "Accion de login",
-      user,
+      message: "Te has identificado correctamente",
+      user: {
+        name: user.name,
+        nick: user.nick,
+      },
+      token,
     });
   } catch (error) {
     return res.status(500).json({
