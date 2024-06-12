@@ -5,6 +5,7 @@ const User = require("../models/user");
 // Importar servicios
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
+const mongoosePaginate = require("mongoose-pagination");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -165,7 +166,10 @@ const profile = async (req, res) => {
       });
     }
     // Consultar para sacar los datos del usuario
-    const userProfile = await User.findById(id).select({password:0, role:0});
+    const userProfile = await User.findById(id).select({
+      password: 0,
+      role: 0,
+    });
     if (!userProfile) {
       return res.status(404).json({
         status: "error",
@@ -186,10 +190,37 @@ const profile = async (req, res) => {
   }
 };
 
+const list = async (req, res) => {
+
+
+  
+  // Constrolar en que pagina estamos
+  let page = 1;
+  if (req.params.page) {
+    page = req.params.page;
+    page = parseInt(page)
+  }
+
+  // Consultar mongoose paginate
+  let itemsPerPage = 5;
+
+  const users = await User.find()
+  console.log(users)
+
+  //Devolver resultado (Posteriormente ionfo follow)
+
+  return res.status(200).send({
+    status: "success",
+    message: "Ruta de listado de usuarios",
+    page
+  });
+};
+
 //Exportar acciones
 module.exports = {
   pruebaUser,
   register,
   login,
   profile,
+  list,
 };
