@@ -1,9 +1,7 @@
 // importar dependencias y modulos
 const bcrypt = require("bcrypt");
-
 // Imortar modelos
 const User = require("../models/user");
-
 // Importar servicios
 const jwt = require("../services/jwt")
 
@@ -11,6 +9,7 @@ const jwt = require("../services/jwt")
 const pruebaUser = (req, res) => {
   return res.status(200).send({
     message: "Mensaje enviado desde: controllers/user.js",
+    usuario: req.user
   });
 };
 
