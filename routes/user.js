@@ -5,8 +5,10 @@ const check = require("../middlewares/auth");
 
 // Definir rutas
 router.get("/prueba-user", check.auth, UserController.pruebaUser);
-router.post("/register", UserController.register),
-  router.post("/login", UserController.login);
+router.post("/register", UserController.register);
+router.post("/login", UserController.login);
+router.get("/profile/:id", check.auth, UserController.profile);
+
 
 // exportar router
 module.exports = router;
