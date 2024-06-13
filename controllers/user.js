@@ -190,6 +190,7 @@ const profile = async (req, res) => {
   }
 };
 
+/* VERSION 2.0 list
 const list = async (req, res) => {
   const total = await User.find();
   try {
@@ -224,7 +225,33 @@ const list = async (req, res) => {
       message: "Error al obtener la lista de usuarios",
     });
   }
+};*/
+
+//    VERSION 2.0 list  -  using mongoose 8.4
+const list = async (req, res) => {
+  try {
+    const usersPerPage = 2; // Define items per page
+    const page = parseInt(req.params.page || 1); // Get page number from query string (default to 1)
+    const skip = (page - 1) * usersPerPage; // Calculate skip based on page and items per page
+    const users = await User.find().sort("_id").skip(skip).limit(usersPerPage);
+    // Process and return paginated users
+    const totalUsers = await User.countDocuments(); // Count total users
+    return res.status(200).json({
+      status: "success",
+      page,
+      itemsPerPage: users.length,
+      pages: Math.ceil(totalUsers / usersPerPage), // Calculate total pages
+      totalUsers,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al obtener la lista de usuarios",
+    });
+  }
 };
+//end   VERSION 2.0 list  -  using mongoose 8.4   */
 
 //Exportar acciones
 module.exports = {
