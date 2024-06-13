@@ -1,6 +1,6 @@
 // importar dependencias y modulos
 const bcrypt = require("bcrypt");
-// Imortar modelos
+// Importar modelos
 const User = require("../models/user");
 // Importar servicios
 const jwt = require("../services/jwt");
@@ -191,29 +191,39 @@ const profile = async (req, res) => {
 };
 
 const list = async (req, res) => {
-
-
-  
-  // Constrolar en que pagina estamos
-  let page = 1;
-  if (req.params.page) {
-    page = req.params.page;
-    page = parseInt(page)
+  const total = await User.find();
+  try {
+    // Controlar en que pagina estamos
+    let page = 1;
+    if (req.params.page) {
+      page = req.params.page;
+    }
+    page = parseInt(page);
+    // Consultar mongoose paginate
+    let itemsPerPage = 3;
+    const users = await User.find().sort("_id").paginate(page, itemsPerPage);
+    if (!users.length) {
+      return res.status(404).send({
+        status: "error",
+        message: "No hay usuarios para esta paginacion",
+      });
+    }
+    //Devolver resultado (Posteriormente info follow)
+    return res.status(200).send({
+      status: "success",
+      page: page,
+      itemsPerPage: itemsPerPage,
+      usersPage: users.length,
+      total: total.length,
+      pages: `${page} de  ${Math.ceil(total.length / itemsPerPage)}`,
+      users: users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al obtener la lista de usuarios",
+    });
   }
-
-  // Consultar mongoose paginate
-  let itemsPerPage = 5;
-
-  const users = await User.find()
-  console.log(users)
-
-  //Devolver resultado (Posteriormente ionfo follow)
-
-  return res.status(200).send({
-    status: "success",
-    message: "Ruta de listado de usuarios",
-    page
-  });
 };
 
 //Exportar acciones
