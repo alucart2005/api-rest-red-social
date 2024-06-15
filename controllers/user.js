@@ -6,6 +6,7 @@ const User = require("../models/user");
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
 const mongoosePaginate = require("mongoose-pagination");
+const user = require("../models/user");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -126,7 +127,6 @@ const login = async (req, res) => {
 
     // Comprobar contraseña
     const pwd = bcrypt.compareSync(params.password, user.password);
-    console.log(pwd);
     if (!pwd) {
       return res.status(400).json({
         status: "error",
@@ -253,6 +253,65 @@ const list = async (req, res) => {
 };
 //end   VERSION 2.0 list  -  using mongoose 8.4   */
 
+const update = async (req, res) => {
+  try {
+    // Recoger info del usuario
+    let userIdentity = req.user;
+    let userToUpDate = req.body;
+
+    //Eliminar campos sobrantes
+    delete userToUpDate.exp;
+    delete userToUpDate.iat;
+    delete userToUpDate.role;
+    delete userToUpDate.image;
+
+    // Comprobar si el ususrio ya existe
+    const users = await User.find({
+      $or: [
+        { email: userToUpDate.email.toLowerCase() },
+        { nick: userToUpDate.nick.toLowerCase() },
+      ],
+    });
+
+    let userIssets = false;
+    users.forEach((user) => {
+      if (user && user._id != userIdentity.id) userIssets = true;
+    });
+
+    if (userIssets) {
+      return res.status(200).send({
+        status: "error",
+        message: "El usuario ya existe",
+      });
+    }
+
+    // Cifrar la contraseña
+    if (userToUpDate.password) {
+      let pwd = await bcrypt.hash(userToUpDate.password, 10);
+      userToUpDate.password = pwd;
+    }
+
+    // Si me llega la info cifrada
+
+    // Buscar y actualizar
+    const userUpdate = await User.findByIdAndUpdate(userIdentity.id, userToUpDate, {new:true})
+    //devolver respuesta
+
+    // Exportar acciones
+
+    return res.status(200).send({
+      status: "success",
+      message: "Metodo actualizar usuario",
+      user: userUpdate,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al actualizar usuario",
+    });
+  }
+};
+
 //Exportar acciones
 module.exports = {
   pruebaUser,
@@ -260,4 +319,5 @@ module.exports = {
   login,
   profile,
   list,
+  update,
 };
