@@ -258,13 +258,11 @@ const update = async (req, res) => {
     // Recoger info del usuario
     let userIdentity = req.user;
     let userToUpDate = req.body;
-
     //Eliminar campos sobrantes
     delete userToUpDate.exp;
     delete userToUpDate.iat;
     delete userToUpDate.role;
     delete userToUpDate.image;
-
     // Comprobar si el ususrio ya existe
     const users = await User.find({
       $or: [
@@ -272,33 +270,30 @@ const update = async (req, res) => {
         { nick: userToUpDate.nick.toLowerCase() },
       ],
     });
-
     let userIssets = false;
     users.forEach((user) => {
       if (user && user._id != userIdentity.id) userIssets = true;
     });
-
     if (userIssets) {
-      return res.status(200).send({
+      return res.status(400).send({
         status: "error",
-        message: "El usuario ya existe",
+        message: "Email o nombre de usuario ya en uso",
       });
     }
-
     // Cifrar la contraseña
     if (userToUpDate.password) {
       let pwd = await bcrypt.hash(userToUpDate.password, 10);
       userToUpDate.password = pwd;
     }
-
     // Si me llega la info cifrada
-
     // Buscar y actualizar
-    const userUpdate = await User.findByIdAndUpdate(userIdentity.id, userToUpDate, {new:true})
+    const userUpdate = await User.findByIdAndUpdate(
+      userIdentity.id,
+      userToUpDate,
+      { new: true }
+    );
     //devolver respuesta
-
     // Exportar acciones
-
     return res.status(200).send({
       status: "success",
       message: "Metodo actualizar usuario",
@@ -311,6 +306,69 @@ const update = async (req, res) => {
     });
   }
 };
+
+
+ /*Version 2.0 update
+const update = async (req, res) => {
+  try {
+    // Extract user data from request body
+    const userIdentity = req.user;
+    const userUpdates = req.body;
+    // Validate incoming data (optional)
+    // You might want to validate userUpdates to ensure required fields are present and have valid formats
+    // Sanitize email and nick (optional)
+    userUpdates.email = userUpdates.email.toLowerCase().trim(); // Sanitize email
+    userUpdates.nick = userUpdates.nick.toLowerCase().trim(); // Sanitize nick
+    // Exclude unwanted fields from update object
+    const allowedUpdates = ["name", "email", "nick", "password"]; // Define allowed update fields
+    const filteredUpdates = Object.keys(userUpdates)
+      .filter((key) => allowedUpdates.includes(key))
+      .reduce((acc, key) => ({ ...acc, [key]: userUpdates[key] }), {});
+    // Check for existing email or nick (excluding current user)
+    const existingUser = await User.findOne({
+      $or: [
+        { email: filteredUpdates.email },
+        { nick: filteredUpdates.nick },
+      ],
+      _id: { $ne: userIdentity.id }, // Exclude current user
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email o nombre de usuario ya en uso",
+      });
+    }
+    // Hash password if provided
+    if (filteredUpdates.password) {
+      filteredUpdates.password = await bcrypt.hash(filteredUpdates.password, 10);
+    }
+    // Update user data
+    const updatedUser = await User.findByIdAndUpdate(
+      userIdentity.id,
+      filteredUpdates,
+      { new: true } // Return the updated document
+    );
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: "error",
+        message: "Usuario no encontrado",
+      });
+    }
+    // Return successful update response
+    return res.status(200).json({
+      status: "success",
+      message: "Usuario actualizado exitosamente",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    return res.status(500).json({
+      status: "error",
+      message: "Error al actualizar usuario",
+    });
+  }
+};
+end Version 2.0 update */
 
 //Exportar acciones
 module.exports = {
