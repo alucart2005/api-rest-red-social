@@ -6,7 +6,6 @@ const User = require("../models/user");
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
 const mongoosePaginate = require("mongoose-pagination");
-const user = require("../models/user");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -306,9 +305,7 @@ const update = async (req, res) => {
     });
   }
 };
-
-
- /*Version 2.0 update
+/*Version 2.0 update
 const update = async (req, res) => {
   try {
     // Extract user data from request body
@@ -370,6 +367,23 @@ const update = async (req, res) => {
 };
 end Version 2.0 update */
 
+const upload = async (req, res) => {
+  try {
+    return res.status(200).send({
+      status: "success",
+      message: "Every thing is OK !!",
+      user: req.user,
+      file: req.file,
+      //files: req.files,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al actualizar usuario",
+    });
+  }
+};
+
 //Exportar acciones
 module.exports = {
   pruebaUser,
@@ -378,4 +392,5 @@ module.exports = {
   profile,
   list,
   update,
+  upload,
 };
