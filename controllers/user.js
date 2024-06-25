@@ -6,6 +6,7 @@ const User = require("../models/user");
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
 const mongoosePaginate = require("mongoose-pagination");
+const fs = require("fs");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -369,11 +370,50 @@ end Version 2.0 update */
 
 const upload = async (req, res) => {
   try {
+    // Recoger el fichero de imagen y comprobar que existe
+    if (!req.file) {
+      return res.status(404).send({
+        status: "error",
+        message: "Peticion no incluye la imagen",
+      });
+    }
+    // Conseguir el nombre del archivo
+    let image = req.file.originalname;
+    // Sacar la extension del archivo
+    const imageSplit = image.split(".");
+    const extension = imageSplit[1];
+    // Comprobar la extension
+    if (
+      extension != "png" &&
+      extension != "jpg" &&
+      extension != "jpeg" &&
+      extension != "gif"
+    ) {
+      // Si no es correcto borrar el archivo
+      const filePath = req.file.path;
+      const fileDeleted = fs.unlinkSync(filePath);
+      // Devolver respuesta negativa
+      return res.status(400).send({
+        status: "error",
+        message: "Extension invalida",
+      });
+    }
+    // Si si es correcto guardar el archivo en la db
+    const userUpdated = await User.findOneAndUpdate(
+      req.user.id,
+      { image: req.file.filename },
+      { new: true }
+    );
+    // Devolver respuesta
+
     return res.status(200).send({
       status: "success",
       message: "Every thing is OK !!",
       user: req.user,
       file: req.file,
+      image,
+      extension,
+
       //files: req.files,
     });
   } catch (error) {
