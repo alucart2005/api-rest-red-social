@@ -382,6 +382,12 @@ const upload = async (req, res) => {
     // Sacar la extension del archivo
     const imageSplit = image.split(".");
     const extension = imageSplit[1];
+
+    // List of allowed extensions
+    //const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+    // Check if extension is allowed
+    // if (!allowedExtensions.includes(extension))
+
     // Comprobar la extension
     if (
       extension != "png" &&
@@ -399,27 +405,62 @@ const upload = async (req, res) => {
       });
     }
     // Si si es correcto guardar el archivo en la db
-    const userUpdated = await User.findOneAndUpdate(
+    const userUpdated = await User.findByIdAndUpdate(
       req.user.id,
       { image: req.file.filename },
       { new: true }
     );
+    if (!userUpdated) {
+      return res.status(404).send({
+        status: "error",
+        message: "Usuario no encontrado",
+      });
+    }
     // Devolver respuesta
-
     return res.status(200).send({
       status: "success",
-      message: "Every thing is OK !!",
-      user: req.user,
-      file: req.file,
-      image,
-      extension,
-
-      //files: req.files,
+      user: userUpdated,
     });
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "Error al actualizar usuario",
+      message: "Error el subir el Avatar",
+    });
+  }
+};
+
+const avatar = async (req, res) => {
+  try {
+    // Sacar el parametro de la url
+    const file = req.params.file;
+    // Montar el path real de la imagen
+    const filePath = "./uploads/avatars/";
+    // Comprobar que existe
+    // fs.stat(filePath,(exist)=>{
+    //   if (!exist) {
+    //     return res.status(404).send({
+    //       status:"error",
+    //       message: "No existe la imagen"
+    //     })
+    //   }
+    // })
+
+    const exist = fs.stat(filePath);
+    if (!exist) {
+      return res.status(404).send({
+        status: "error",
+        message: "No existe la imagen",
+      });
+    }
+
+    // Devolver un file - con express
+    return res.status(200).send({
+      status: "success AVATAR",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error el subir el Avatar",
     });
   }
 };
@@ -433,4 +474,5 @@ module.exports = {
   list,
   update,
   upload,
+  avatar,
 };
