@@ -6,7 +6,9 @@ const User = require("../models/user");
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
 const mongoosePaginate = require("mongoose-pagination");
-const fs = require("fs");
+const fs = require("fs").promises;
+const path = require("path");
+const { stat } = require("fs");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
@@ -431,36 +433,23 @@ const upload = async (req, res) => {
 
 const avatar = async (req, res) => {
   try {
-    // Sacar el parametro de la url
+    // Sacar el parámetro de la url
     const file = req.params.file;
     // Montar el path real de la imagen
-    const filePath = "./uploads/avatars/";
-    // Comprobar que existe
-    // fs.stat(filePath,(exist)=>{
-    //   if (!exist) {
-    //     return res.status(404).send({
-    //       status:"error",
-    //       message: "No existe la imagen"
-    //     })
-    //   }
-    // })
-
-    const exist = fs.stat(filePath);
-    if (!exist) {
+    const filePath = path.join("./uploads/avatars", file);
+    try {
+      await fs.access(filePath);
+    } catch (error) {
       return res.status(404).send({
         status: "error",
         message: "No existe la imagen",
       });
     }
-
-    // Devolver un file - con express
-    return res.status(200).send({
-      status: "success AVATAR",
-    });
+    return res.sendFile(path.resolve(filePath));
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "Error el subir el Avatar",
+      message: "Error al servir el Avatar",
     });
   }
 };
