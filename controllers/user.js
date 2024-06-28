@@ -232,7 +232,7 @@ const list = async (req, res) => {
 //    VERSION 2.0 list  -  using mongoose 8.4
 const list = async (req, res) => {
   try {
-    const usersPerPage = 2; // Define items per page
+    const usersPerPage = 6; // Define items per page
     const page = parseInt(req.params.page || 1); // Get page number from query string (default to 1)
     const skip = (page - 1) * usersPerPage; // Calculate skip based on page and items per page
     const users = await User.find().sort("_id").skip(skip).limit(usersPerPage);
