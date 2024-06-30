@@ -53,7 +53,7 @@ const unfollow = async (req, res) => {
     });
     return res.status(200).send({
       status: "Success",
-      message:"Follow eliminado correctanmente",
+      message: "Follow eliminado correctanmente",
     });
   } catch (error) {
     return res.status(500).json({
@@ -62,12 +62,57 @@ const unfollow = async (req, res) => {
     });
   }
 };
-// Accion listado de usuarios que estoy siguiendo
+
+// Accion listado de usuarios que cualquier usuario esta siguiendo
+const following = async (req, res) => {
+  
+  // Sacar el id del usuario identificado
+
+  // Comprobar si me llega el id por parametro en url
+
+  // Comprobar si me llega la pagina, si no la pagina 1
+
+  // Usuarios por pagina que quiero mostrar
+
+  // Find a follow, popular los datos de los usuarios y paginar con mongoose paginate
+
+  // listado de usuario de X y propios
+
+  // Sacar un array de ids de los usarios que me siguen y sigo
+  
+  try {
+    return res.status(200).send({
+      status: "Success",
+      message: "Listado de usuarios seguidos",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Problema al intentar listar usuarios seguidos",
+    });
+  }
+};
+
 // Accion listado de usuarios que me siguen
+const followers = async (req, res) => {
+  try {
+    return res.status(200).send({
+      status: "Success",
+      message: "Listado de usuarios que me siguen",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Problema al intentar listar usuarios que me siguen",
+    });
+  }
+};
 
 //Exportar acciones
 module.exports = {
   pruebaFollow,
   save,
   unfollow,
+  following,
+  followers
 };
