@@ -21,7 +21,7 @@ const save = async (req, res) => {
     return res.status(200).send({
       status: "Success",
       message: "Every things is OK !!!",
-      identity: req.user,
+      identity,
       params
     });
   } catch (error) {
