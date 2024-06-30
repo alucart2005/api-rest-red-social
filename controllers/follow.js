@@ -111,30 +111,30 @@ const following = async (req, res) => {
     // Comprobar si me llega el id por parametro en url
     if (req.params.id) userId = req.params.id;
     // Comprobar si me llega la pagina, si no la pagina 1
-    let page =1;
-    if (req.params.page) page= parseInt(req.params.page)
+    let page = 1;
+    if (req.params.page) page = parseInt(req.params.page);
     // Usuarios por pagina que quiero mostrar
-    const itemsPerPage = 5
+    const itemsPerPage = 5;
 
-    const options={
+    const options = {
       page: page,
       limit: itemsPerPage,
-      populate:[
-        {path:"user", select:"-password -role -__v"},
-        {path:"followed", select:"-password -role -__v"}
-      ]
-    }
+      populate: [
+        { path: "user", select: "-password -role -__v" },
+        { path: "followed", select: "-password -role -__v" },
+      ],
+    };
 
-    const follows =await Follow.paginate({user:userId}, options)
+    const follows = await Follow.paginate({ user: userId }, options);
+    
     return res.status(200).send({
       status: "Success",
       message: "Listado de usuarios seguidos",
-      user: req.user.name,
-      follow:follows.docs,
-      follows
+      "user logueado": req.user.name,
+      total: follows.totalDocs,
+      pages: follows.totalPages,
+      follows: follows.docs,
     });
-  
-
   } catch (error) {
     return res.status(500).json({
       status: "error",
