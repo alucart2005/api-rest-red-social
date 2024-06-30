@@ -54,8 +54,6 @@ const unfollow = async (req, res) => {
     return res.status(200).send({
       status: "Success",
       message:"Follow eliminado correctanmente",
-      identity: req.user.name,
-      followDelete,
     });
   } catch (error) {
     return res.status(500).json({
