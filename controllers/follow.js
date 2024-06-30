@@ -8,14 +8,33 @@ const pruebaFollow = (req, res) => {
   });
 };
 
-
 // Accion de guardar un follow(accion seguir)
+const save = async (req, res) => {
+  try {
+    //Conseguir datos por body
+
+    // Sacar id del usuario identificado
+    // Crear objeto con modelo follow
+    // Guardar objeto en db
+
+    return res.status(200).send({
+      status: "Success",
+      message: "Every things is OK !!!",
+      identity: req.user
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error el subir el Avatar",
+    });
+  }
+};
 // Accion de borrar un follow (accion dejar de seguir)
 // Accion listado de usuarios que estoy siguiendo
 // Accion listado de usuarios que me siguen
 
-
 //Exportar acciones
 module.exports = {
   pruebaFollow,
+  save,
 };

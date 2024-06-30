@@ -8,7 +8,6 @@ const { isValidObjectId } = require("mongoose");
 const mongoosePaginate = require("mongoose-pagination");
 const fs = require("fs").promises;
 const path = require("path");
-const { stat } = require("fs");
 
 // acciones de prueba
 const pruebaUser = (req, res) => {
