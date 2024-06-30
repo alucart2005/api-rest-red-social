@@ -158,7 +158,7 @@ const login = async (req, res) => {
 
 const profile = async (req, res) => {
   try {
-    // Recibir el parametro del id< del usuario por la url
+    // Recibir el parametro del id del usuario por la url
     const id = req.params.id;
     if (!isValidObjectId(id)) {
       return res.status(400).send({
