@@ -2,7 +2,7 @@ const Follow = require("../models/follow");
 const User = require("../models/user");
 
 // Importar dependencias
-const mongoosePaginate = require("mongoose-pagination");
+//const mongoosePaginate = require("mongoose-pagination");
 
 // acciones de prueba
 const pruebaFollow = (req, res) => {
@@ -105,37 +105,41 @@ const unfollow = async (req, res) => {
 };*/
 
 const following = async (req, res) => {
-  // Sacar el id del usuario identificado
-  let userId = req.user.id;
-  // Comprobar si me llega el id por parametro en url
-  if (req.params.id) userId = req.params.id;
-
-  // Comprobar si me llega la pagina, si no la pagina 1
-  let page = 1;
-  if (req.params.page) page = parseInt(req.params.page);
-
-  // Usuarios por pagina que quiero mostrar
-  const itemsPerPage = 5;
-
-  // Find a follow, popular los datos de los usuarios y paginar con mongoose paginate
-  const follows = await Follow.find({ user: userId })
-    .populate([{ path: "user followed", select: "-password -role -__v" }])
-    .paginate(page, itemsPerPage);
-  // listado de usuario de X y propios
-
-  // Sacar un array de ids de los usarios que me siguen y sigo
-
   try {
+    // Sacar el id del usuario identificado
+    let userId = req.user.id;
+    // Comprobar si me llega el id por parametro en url
+    if (req.params.id) userId = req.params.id;
+    // Comprobar si me llega la pagina, si no la pagina 1
+    let page =1;
+    if (req.params.page) page= parseInt(req.params.page)
+    // Usuarios por pagina que quiero mostrar
+    const itemsPerPage = 5
+
+    const options={
+      page: page,
+      limit: itemsPerPage,
+      populate:[
+        {path:"user", select:"-password -role -__v"},
+        {path:"followed", select:"-password -role -__v"}
+      ]
+    }
+
+    const follows =await Follow.paginate({user:userId}, options)
     return res.status(200).send({
       status: "Success",
       message: "Listado de usuarios seguidos",
-      total,
-      follows,
+      user: req.user.name,
+      follow:follows.docs,
+      follows
     });
+  
+
   } catch (error) {
     return res.status(500).json({
       status: "error",
       message: "Problema al intentar listar usuarios seguidos",
+      error: error.message,
     });
   }
 };

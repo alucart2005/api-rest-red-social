@@ -5,7 +5,7 @@ const User = require("../models/user");
 // Importar servicios
 const jwt = require("../services/jwt");
 const { isValidObjectId } = require("mongoose");
-const mongoosePaginate = require("mongoose-pagination");
+//const mongoosePaginate = require("mongoose-pagination");
 const fs = require("fs").promises;
 const path = require("path");
 
