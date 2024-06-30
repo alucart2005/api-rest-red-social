@@ -12,15 +12,17 @@ const pruebaFollow = (req, res) => {
 const save = async (req, res) => {
   try {
     //Conseguir datos por body
-
+    const params = req.body;
     // Sacar id del usuario identificado
+    const identity = req.user
     // Crear objeto con modelo follow
     // Guardar objeto en db
 
     return res.status(200).send({
       status: "Success",
       message: "Every things is OK !!!",
-      identity: req.user
+      identity: req.user,
+      params
     });
   } catch (error) {
     return res.status(500).json({
