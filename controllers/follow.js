@@ -1,6 +1,9 @@
 const Follow = require("../models/follow");
 const User = require("../models/user");
 
+// Importar dependencias
+const mongoosePaginate = require("mongoose-pagination")
+
 // acciones de prueba
 const pruebaFollow = (req, res) => {
   return res.status(200).send({
@@ -65,25 +68,30 @@ const unfollow = async (req, res) => {
 
 // Accion listado de usuarios que cualquier usuario esta siguiendo
 const following = async (req, res) => {
-  
   // Sacar el id del usuario identificado
-
+  let userId = req.user.id;
   // Comprobar si me llega el id por parametro en url
+  if (req.params.id) userId = req.params.id;
 
   // Comprobar si me llega la pagina, si no la pagina 1
+  let page = 1;
+  if (req.params.page) page = req.params.page;
 
   // Usuarios por pagina que quiero mostrar
+  const itemsPerPage = 5;
 
   // Find a follow, popular los datos de los usuarios y paginar con mongoose paginate
-
+  
   // listado de usuario de X y propios
 
   // Sacar un array de ids de los usarios que me siguen y sigo
-  
+
   try {
     return res.status(200).send({
       status: "Success",
       message: "Listado de usuarios seguidos",
+      userId: userId,
+      user: req.user,
     });
   } catch (error) {
     return res.status(500).json({
@@ -114,5 +122,5 @@ module.exports = {
   save,
   unfollow,
   following,
-  followers
+  followers,
 };
