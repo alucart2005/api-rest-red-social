@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 // Importar servicios
 const jwt = require("../services/jwt");
+const followService = require("../services/followService");
 const { isValidObjectId } = require("mongoose");
 //const mongoosePaginate = require("mongoose-pagination");
 const fs = require("fs").promises;
@@ -177,11 +178,15 @@ const profile = async (req, res) => {
         message: "Usuario no encontrado",
       });
     }
-    // Devolver datos del usuario
-    // Posteriormente devolver informacion de follows
+
+    // Info de seguimiento
+    const followInfo = await followService.followThisUser(req.user.id, id);
+
     return res.status(200).json({
       status: "success",
       userProfile,
+      following: followInfo.follower,
+      follower: followInfo.follower,
     });
   } catch (error) {
     return res.status(500).json({

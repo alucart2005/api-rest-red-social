@@ -39,8 +39,50 @@ const followUserIds = async (identityUserId) => {
     };
   }
 };
+/* followUserIds Ver.2
+const followUserIds = async (identityUserId) => {
+  try {
+    const [following, followers] = await Promise.all([
+      Follow.find({ user: identityUserId }, { followed: 1, _id: 0 }).lean(),
+      Follow.find({ followed: identityUserId }, { user: 1, _id: 0 }).lean()
+    ]);
 
-const followThisUser = async (identityUserId, profileUserId) => {};
+    return {
+      following: following.map(follow => follow.followed.toString()),
+      followers: followers.map(follow => follow.user.toString())
+    };
+  } catch (error) {
+    console.error("Error en followUserIds:", error);
+    return {
+      following: [],
+      followers: []
+    };
+  }
+};
+*/
+
+const followThisUser = async (identityUserId, profileUserId) => {
+  try {
+    let following = await Follow.findOne({
+      user: identityUserId,
+      followed: profileUserId,
+    }).lean();
+    let follower = await Follow.findOne({
+      user: profileUserId,
+      followed: identityUserId,
+    }).lean();
+    return {
+      following,
+      follower,
+    };
+  } catch (error) {
+    console.error("Error en followThisUser:", error);
+    return {
+      following: [],
+      follower: [],
+    };
+  }
+};
 
 module.exports = {
   followUserIds,
