@@ -185,7 +185,7 @@ const profile = async (req, res) => {
     return res.status(200).json({
       status: "success",
       userProfile,
-      following: followInfo.follower,
+      following: followInfo.following,
       follower: followInfo.follower,
     });
   } catch (error) {
@@ -233,7 +233,7 @@ const list = async (req, res) => {
   }
 };*/
 
-//    VERSION 2.0 list  -  using mongoose 8.4
+// VERSION 2.0 list  -  using mongoose 8.4
 const list = async (req, res) => {
   try {
     const usersPerPage = 6; // Define items per page
@@ -242,6 +242,8 @@ const list = async (req, res) => {
     const users = await User.find().sort("_id").skip(skip).limit(usersPerPage);
     // Process and return paginated users
     const totalUsers = await User.countDocuments(); // Count total users
+    // Sacar un array de ids de los usuarios que sigo y me siguen
+    let followUserIds = await followService.followUserIds(req.user.id);
     return res.status(200).json({
       status: "success",
       page,
@@ -249,6 +251,8 @@ const list = async (req, res) => {
       pages: Math.ceil(totalUsers / usersPerPage), // Calculate total pages
       totalUsers,
       users,
+      following: followUserIds.following,
+      followers: followUserIds.followers,
     });
   } catch (error) {
     return res.status(500).json({
