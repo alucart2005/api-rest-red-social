@@ -104,7 +104,7 @@ const following = async (req, res) => {
       pages: follows.totalPages,
       follows: follows.docs,
       userFollowing: followUserIds.following,
-      userFollowMe: followUserIds.followers
+      userFollowMe: followUserIds.followers,
     });
   } catch (error) {
     return res.status(500).json({
@@ -118,10 +118,40 @@ const following = async (req, res) => {
 // Accion listado de usuarios que me siguen a cualquier otro usuario
 const followers = async (req, res) => {
   try {
+    // Sacar el id del usuario identificado
+    let userId = req.user.id;
+    // Comprobar si me llega el id por parametro en url
+    if (req.params.id) userId = req.params.id;
+    // Comprobar si me llega la pagina, si no la pagina 1
+    let page = 1;
+    if (req.params.page) page = parseInt(req.params.page);
+    // Usuarios por pagina que quiero mostrar
+    const itemsPerPage = 5;
+
+    const options = {
+      page: page,
+      limit: itemsPerPage,
+      populate: [
+        { path: "user", select: "-password -role -__v" },
+        { path: "followed", select: "-password -role -__v" },
+      ],
+    };
+    
+    const follows = await Follow.paginate({ followed: userId }, options);
+
+    let followUserIds = await followService.followUserIds(userId);
+
     return res.status(200).send({
       status: "Success",
       message: "Listado de usuarios que me siguen",
+      "user logueado": req.user.nick,
+      total: follows.totalDocs,
+      pages: follows.totalPages,
+      followers: follows.docs,
+      userFollowing: followUserIds.following,
+      userFollowMe: followUserIds.followers,
     });
+
   } catch (error) {
     return res.status(500).json({
       status: "error",
