@@ -47,22 +47,55 @@ const detail = async (req, res) => {
   try {
     const publicationId = req.params.id;
     const publicationStored = await Publication.findById(publicationId);
-
+    // Verificar si la publicación existe
+    if (!publicationStored) {
+      return res.status(404).json({
+        status: "error",
+        message: "Publicación no encontrada",
+      });
+    }
     return res.status(200).send({
       status: "success",
       message: "Mostrar publicacion",
       publication: publicationStored,
     });
-    
   } catch (error) {
-    return res.status(404).json({
+    return res.status(500).json({
       status: "error",
-      message: "No existe la publicacion",
+      message: "Error al obtener la publicación",
     });
   }
 };
 
-// Eliminar publicaciones
+//Eliminar publicaciones
+const remove = async (req, res) => {
+  try {
+    const publicationId = req.params.id;
+    const publication = await Publication.findOne({
+      _id: publicationId,
+      user: req.user.id,
+    });
+    console.log(publication);
+    if (!publication) {
+      return res.status(404).json({
+        status: "error",
+        message: "Publicacion no encontrada",
+      });
+    }
+    await Publication.deleteOne({ _id: publicationId });
+    return res.status(200).send({
+      status: "success",
+      message: "Publicacion Eliminada",
+    });
+  } catch (error) {
+    return res.status(404).json({
+      status: "error",
+      message: "Error al eliminar la publicacion",
+      loged: req.user.id,
+    });
+  }
+};
+
 // Listar todas las publicaciones
 // Listar publicaciones de un usuario
 // Subir ficheros
@@ -73,4 +106,5 @@ module.exports = {
   pruebaPublication,
   save,
   detail,
+  remove,
 };
