@@ -1,6 +1,9 @@
 const { Schema, model } = require("mongoose");
+const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
-const PublicationSchema = Schema({
+
+const PublicationSchema = mongoose.Schema({
   user: {
     type: Schema.ObjectId,
     ref: "User",
@@ -15,6 +18,8 @@ const PublicationSchema = Schema({
     default: Date.now,
   },
 });
+
+PublicationSchema.plugin(mongoosePaginate)
 
 module.exports =model("Publication", PublicationSchema, "Publications")
 //modelo, schema, coleccion
