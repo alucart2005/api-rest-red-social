@@ -86,18 +86,52 @@ const remove = async (req, res) => {
     return res.status(200).send({
       status: "success",
       message: "Publicacion Eliminada",
+      publicationId,
     });
   } catch (error) {
     return res.status(404).json({
       status: "error",
       message: "Error al eliminar la publicacion",
-      loged: req.user.id,
+    });
+  }
+};
+
+// Listar publicaciones de un usuario
+const user = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Controlar la pagina
+    let page = 1;
+    if (req.params.page) page = parseInt(req.params.page);
+    const itemPerPage = 5;
+    // Find, populate, ordenar
+    const options = {
+      page: page,
+      limit: itemPerPage,
+      sort: { _id: 1 },
+    };
+
+    const publications = await Publication.paginate(
+      { user: userId },
+      options
+    );
+
+    return res.status(200).send({
+      status: "success",
+      message: "Every thibg is OK !!!",
+      publications,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al obtener lista de publicación",
     });
   }
 };
 
 // Listar todas las publicaciones
-// Listar publicaciones de un usuario
+
 // Subir ficheros
 // Devolver archivos multimedia
 
@@ -107,4 +141,5 @@ module.exports = {
   save,
   detail,
   remove,
+  user,
 };

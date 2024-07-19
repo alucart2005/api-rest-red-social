@@ -1,9 +1,8 @@
 const { Schema, model } = require("mongoose");
-const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate-v2');
+const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
-
-const FollowSchema =mongoose.Schema({
+const FollowSchema = mongoose.Schema({
   user: {
     type: Schema.ObjectId,
     ref: "User",
@@ -20,4 +19,4 @@ const FollowSchema =mongoose.Schema({
 
 FollowSchema.plugin(mongoosePaginate);
 
-module.exports=model("Follow", FollowSchema, "follows")
+module.exports = model("Follow", FollowSchema, "follows");
