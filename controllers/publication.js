@@ -110,9 +110,7 @@ const user = async (req, res) => {
       page: page,
       limit: itemPerPage,
       sort: { _id: 1 },
-      populate:[
-        { path: "user", select: "-password -role -__v" },
-      ]
+      populate: [{ path: "user", select: "-password -role -__v" }],
     };
 
     const publications = await Publication.paginate({ user: userId }, options);
@@ -126,8 +124,8 @@ const user = async (req, res) => {
       status: "success",
       message: "Publicaciones recuperadas con éxito",
       "user logueado": req.user.name,
-      totalDocs:publications.totalDocs,
-      page:publications.page,
+      totalDocs: publications.totalDocs,
+      page: publications.page,
       totalPages: publications.totalPages,
       publications,
     });
@@ -142,6 +140,70 @@ const user = async (req, res) => {
 // Listar todas las publicaciones
 
 // Subir ficheros
+const upload = async (req, res) => {
+  try {
+    const publicationId = req.params.id;
+    // Recoger el fichero de imagen y comprobar que existe
+    if (!req.file) {
+      return res.status(404).send({
+        status: "error",
+        message: "Peticion no incluye la imagen",
+      });
+    }
+    // Conseguir el nombre del archivo
+    let image = req.file.originalname;
+    // Sacar la extension del archivo
+    const imageSplit = image.split(".");
+    const extension = imageSplit[1];
+
+    // List of allowed extensions
+    //const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+    // Check if extension is allowed
+    // if (!allowedExtensions.includes(extension))
+
+    // Comprobar la extension
+    if (
+      extension != "png" &&
+      extension != "jpg" &&
+      extension != "jpeg" &&
+      extension != "gif"
+    ) {
+      // Si no es correcto borrar el archivo
+      const filePath = req.file.path;
+      const fileDeleted = fs.unlinkSync(filePath);
+      // Devolver respuesta negativa
+      return res.status(400).send({
+        status: "error",
+        message: "Extension invalida",
+      });
+    }
+    // Si si es correcto guardar el archivo en la db
+    const publicationUpdate = await Publication.findOneAndUpdate(
+      { user: req.user.id, _id: publicationId },
+      { file: req.file.filename },
+      { new: true }
+    );
+    if (!publicationUpdate) {
+      return res.status(404).send({
+        status: "error",
+        message: "Publicacion no encontrada",
+      });
+    }
+    // Devolver respuesta
+    return res.status(200).send({
+      status: "success",
+      publication: publicationUpdate,
+      file: req.file,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error el subir imagen de la Publicacion",
+      user: req.user.id,
+    });
+  }
+};
+
 // Devolver archivos multimedia
 
 //Exportar acciones
@@ -151,4 +213,5 @@ module.exports = {
   detail,
   remove,
   user,
+  upload,
 };

@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require("multer");
 const UserController = require("../controllers/user");
 const check = require("../middlewares/auth");
-//const path = require("path");
 
 // Configuracion Subida
 const storage = multer.diskStorage({
