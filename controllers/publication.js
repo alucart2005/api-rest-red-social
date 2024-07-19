@@ -138,7 +138,6 @@ const user = async (req, res) => {
   }
 };
 
-
 // Subir ficheros
 const upload = async (req, res) => {
   try {
@@ -155,7 +154,6 @@ const upload = async (req, res) => {
     // Sacar la extension del archivo
     const imageSplit = image.split(".");
     const extension = imageSplit[1];
-
     // Comprobar la extension
     if (
       extension != "png" &&
@@ -201,12 +199,13 @@ const upload = async (req, res) => {
 
 // Devolver archivos multimedia
 
+
 //Exportar acciones
 module.exports = {
   pruebaPublication,
   save,
   detail,
   remove,
-  user,
   upload,
+  user,
 };
