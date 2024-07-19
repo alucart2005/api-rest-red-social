@@ -92,47 +92,7 @@ const remove = async (req, res) => {
     return res.status(404).json({
       status: "error",
       message: "Error al eliminar la publicacion",
-    });
-  }
-};
-
-// Listar publicaciones de un usuario
-const user = async (req, res) => {
-  try {
-    const userId = req.params.id;
-
-    // Controlar la pagina
-    let page = 1;
-    if (req.params.page) page = parseInt(req.params.page);
-    const itemPerPage = 5;
-    // Find, populate, ordenar
-    const options = {
-      page: page,
-      limit: itemPerPage,
-      sort: { _id: 1 },
-      populate: [{ path: "user", select: "-password -role -__v" }],
-    };
-
-    const publications = await Publication.paginate({ user: userId }, options);
-    if (publications.totalDocs === 0) {
-      return res.status(404).json({
-        status: "error",
-        message: "No se encontraron publicaciones para este usuario",
-      });
-    }
-    return res.status(200).send({
-      status: "success",
-      message: "Publicaciones recuperadas con éxito",
-      "user logueado": req.user.name,
-      totalDocs: publications.totalDocs,
-      page: publications.page,
-      totalPages: publications.totalPages,
-      publications,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      status: "error",
-      message: "Error al recuperar publicaciones",
+      loged: req.user.id,
     });
   }
 };
@@ -212,6 +172,4 @@ module.exports = {
   save,
   detail,
   remove,
-  user,
-  upload,
 };
