@@ -9,7 +9,6 @@ const check = require("../middlewares/auth");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads/avatars");
-    //cb(null, path.join(__dirname, "..", "uploads", "avatars"));
   },
   filename: (req, file, cb) => {
     cb(null, "avatar-" + Date.now() + "-" + file.originalname);
