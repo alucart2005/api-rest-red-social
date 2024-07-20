@@ -28,6 +28,8 @@ router.post(
   [check.auth, uploads.single("file0")],
   PublicationController.upload
 );
+router.get("/media/:file",check.auth,PublicationController.media)
+
 
 
 // exportar router

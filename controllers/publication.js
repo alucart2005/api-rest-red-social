@@ -1,3 +1,8 @@
+// Importar modulos
+const fs = require("fs").promises;
+const path = require("path");
+
+// Importar modelos
 const Publication = require("../models/publication");
 
 // acciones de prueba
@@ -192,13 +197,33 @@ const upload = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "Error el subir imagen de la Publicacion",
-      user: req.user.id,
     });
   }
 };
 
 // Devolver archivos multimedia
-
+const media = async (req, res) => {
+  try {
+    // Sacar el parámetro de la url
+    const file = req.params.file;
+    // Montar el path real de la imagen
+    const filePath = path.join("./uploads/publications/", file);
+    try {
+      await fs.access(filePath);
+    } catch (error) {
+      return res.status(404).send({
+        status: "error",
+        message: "No existe la imagen",
+      });
+    }
+    return res.sendFile(path.resolve(filePath));
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al servir el Avatar",
+    });
+  }
+};
 
 //Exportar acciones
 module.exports = {
@@ -208,4 +233,5 @@ module.exports = {
   remove,
   upload,
   user,
+  media,
 };
