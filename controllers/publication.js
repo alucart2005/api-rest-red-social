@@ -225,6 +225,25 @@ const media = async (req, res) => {
   }
 };
 
+// Listar todas las publicaciones
+const feed = async(req,res)=>{
+  try {
+
+    
+   return res.status(200).send({
+    status: "success",
+    message:"everything is OK!!!"
+  })
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error everything is BAD !!!!",
+    });
+
+  }
+}
+
+
 //Exportar acciones
 module.exports = {
   pruebaPublication,
@@ -234,4 +253,5 @@ module.exports = {
   upload,
   user,
   media,
+  feed
 };

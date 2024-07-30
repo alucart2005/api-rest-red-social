@@ -29,6 +29,7 @@ router.post(
   PublicationController.upload
 );
 router.get("/media/:file",check.auth,PublicationController.media)
+router.get("/feed", check.auth, PublicationController.feed);
 
 
 
