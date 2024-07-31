@@ -1,9 +1,10 @@
 // Importar modulos
 const fs = require("fs").promises;
 const path = require("path");
-
 // Importar modelos
 const Publication = require("../models/publication");
+// Importar servicios
+const servicios = require("../services/followService");
 
 // acciones de prueba
 const pruebaPublication = (req, res) => {
@@ -226,23 +227,58 @@ const media = async (req, res) => {
 };
 
 // Listar todas las publicaciones
-const feed = async(req,res)=>{
+const feed = async (req, res) => {
   try {
+    //let page = 1;
+    //if (req.params.page) page = req.params.page;
+    const page = req.params.page ? req.params.page : 1;
+    let itemsPerPage = 5;
+
+    const myFollows = await servicios.followUserIds(req.user.id);
+
+
+
+    const options = {
+      page,
+      limit: itemsPerPage,
+      sort: { _id: 1 },
+      populate: [
+        {
+          path: "user",
+          select: "-password -role -__v",
+        },
+      ],
+    };
+
+
+
+    // const publications = await Publication.find({
+    //   user: myFollows.following
+    // })
+
+
+    const publications = await Publication.paginate(
+      { user: { $in: myFollows.following } },
+      options
+    );
 
     
-   return res.status(200).send({
-    status: "success",
-    message:"everything is OK!!!"
-  })
+    return res.status(200).send({
+      status: "success",
+      message: "Feed de publicaciones",
+      page,
+      itemsPerPage,
+      user: req.user.id,
+      myFollows: myFollows.following,
+      publications,
+    });
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "Error everything is BAD !!!!",
+      message: "no se han listado las publicaciones del feed!!!!",
     });
-
   }
-}
-
+};
 
 //Exportar acciones
 module.exports = {
@@ -253,5 +289,5 @@ module.exports = {
   upload,
   user,
   media,
-  feed
+  feed,
 };
