@@ -229,53 +229,46 @@ const media = async (req, res) => {
 // Listar todas las publicaciones
 const feed = async (req, res) => {
   try {
-    //let page = 1;
-    //if (req.params.page) page = req.params.page;
-    const page = req.params.page ? req.params.page : 1;
-    let itemsPerPage = 5;
-
+    const page = parseInt(req.params.page) || 1;
+    let limit = 5;
     const myFollows = await servicios.followUserIds(req.user.id);
-
-
 
     const options = {
       page,
-      limit: itemsPerPage,
-      sort: { _id: 1 },
-      populate: [
-        {
-          path: "user",
-          select: "-password -role -__v",
-        },
-      ],
+      limit,
+      sort: { create_at: -1 },
+      populate: {
+        path: "user",
+        select: "-password -role -__v -email",
+      },
+      lean: true,
     };
-
-
-
-    // const publications = await Publication.find({
-    //   user: myFollows.following
-    // })
-
 
     const publications = await Publication.paginate(
       { user: { $in: myFollows.following } },
       options
     );
 
-    
-    return res.status(200).send({
+    if (!publications.docs.length) {
+      return res.status(404).json({
+        status: "not_found",
+        message: "No se encontraron publicaciones en el feed",
+      });
+    }
+
+    return res.status(200).json({
       status: "success",
       message: "Feed de publicaciones",
-      page,
-      itemsPerPage,
-      user: req.user.id,
-      myFollows: myFollows.following,
-      publications,
+      Following: myFollows.following.length,
+      cantPublications: publications.totalDocs,
+      currentPage: publications.page,
+      totalPages: publications.totalPages,
+      publications: publications.docs,
     });
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "no se han listado las publicaciones del feed!!!!",
+      message: "Error al obtener las publicaciones del feed",
     });
   }
 };
