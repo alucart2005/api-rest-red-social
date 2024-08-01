@@ -30,6 +30,7 @@ router.post(
 );
 router.get("/media/:file",check.auth,PublicationController.media)
 router.get("/feed/:page?", check.auth, PublicationController.feed);
+router.get("/counters/:id?", check.auth, PublicationController.counters);
 
 
 

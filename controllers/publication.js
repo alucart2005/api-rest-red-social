@@ -1,8 +1,10 @@
 // Importar modulos
 const fs = require("fs").promises;
 const path = require("path");
+const mongoose = require("mongoose");
 // Importar modelos
 const Publication = require("../models/publication");
+const Follow = require("../models/follow");
 // Importar servicios
 const servicios = require("../services/followService");
 
@@ -117,7 +119,7 @@ const user = async (req, res) => {
       page: page,
       limit: itemPerPage,
       sort: { _id: 1 },
-      populate: [{ path: "user", select: "-password -role -__v" }],
+      populate: [{ path: "user", select: "-password -role -__v -email" }],
     };
 
     const publications = await Publication.paginate({ user: userId }, options);
@@ -273,6 +275,37 @@ const feed = async (req, res) => {
   }
 };
 
+const counters = async (req, res) => {
+  try {
+    const userId = req.params.id || req.user.id;
+
+    // Validate user ID using mongoose.Types.ObjectId.isValid()
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid user ID",
+      });
+    }
+
+    const following = await Follow.countDocuments({ user: userId });
+    const followed = await Follow.countDocuments({followed: userId})
+    const publications = await Publication.countDocuments({ user: userId });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Every thing is OK",
+      following,
+      followed,
+      publications,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Error al hacer el conteo",
+    });
+  }
+};
+
 //Exportar acciones
 module.exports = {
   pruebaPublication,
@@ -283,4 +316,5 @@ module.exports = {
   user,
   media,
   feed,
+  counters,
 };

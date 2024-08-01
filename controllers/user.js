@@ -239,7 +239,7 @@ const list = async (req, res) => {
     const usersPerPage = 6; // Define items per page
     const page = parseInt(req.params.page || 1); // Get page number from query string (default to 1)
     const skip = (page - 1) * usersPerPage; // Calculate skip based on page and items per page
-    const users = await User.find().sort("_id").skip(skip).limit(usersPerPage);
+    const users = await User.find().select("-email -password -role -__v").sort("_id").skip(skip).limit(usersPerPage);
     // Process and return paginated users
     const totalUsers = await User.countDocuments(); // Count total users
     // Sacar un array de ids de los usuarios que sigo y me siguen
