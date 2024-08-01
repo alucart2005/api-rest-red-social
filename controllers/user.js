@@ -294,6 +294,8 @@ const update = async (req, res) => {
     if (userToUpDate.password) {
       let pwd = await bcrypt.hash(userToUpDate.password, 10);
       userToUpDate.password = pwd;
+    }else{
+      delete userToUpDate.password
     }
     // Si me llega la info cifrada
     // Buscar y actualizar

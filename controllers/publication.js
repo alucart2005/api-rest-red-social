@@ -108,7 +108,15 @@ const remove = async (req, res) => {
 // Listar publicaciones de un usuario
 const user = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.id || req.user.id;
+
+    // Validate user ID using mongoose.Types.ObjectId.isValid()
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid user ID",
+      });
+    }
 
     // Controlar la pagina
     let page = 1;
@@ -288,7 +296,7 @@ const counters = async (req, res) => {
     }
 
     const following = await Follow.countDocuments({ user: userId });
-    const followed = await Follow.countDocuments({followed: userId})
+    const followed = await Follow.countDocuments({ followed: userId });
     const publications = await Publication.countDocuments({ user: userId });
 
     return res.status(200).json({
