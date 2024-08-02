@@ -5,6 +5,7 @@ const User = require("../models/user");
 // Importar servicios
 const jwt = require("../services/jwt");
 const followService = require("../services/followService");
+const validate = require("../helpers/validate");
 const { isValidObjectId } = require("mongoose");
 //const mongoosePaginate = require("mongoose-pagination");
 const fs = require("fs").promises;
@@ -31,6 +32,9 @@ const register = async (req, res) => {
         message: "Faltan datos por enviar",
       });
     } else {
+
+      validate(params);
+      
       // Control de usuarios duplicados
       const users = await User.find({
         $or: [
@@ -44,6 +48,7 @@ const register = async (req, res) => {
           message: "El usuario ya existe",
         });
       }
+
       // Cifrar la contraseña
       let pwd = await bcrypt.hash(params.password, 10);
       params.password = pwd;
@@ -100,8 +105,8 @@ const register = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({
-      status: "error",
-      message: "Error en la consulta de usuarios",
+      status: error.message,
+      message: "Error al guardar usuario",
     });
   }
 };
@@ -239,7 +244,11 @@ const list = async (req, res) => {
     const usersPerPage = 6; // Define items per page
     const page = parseInt(req.params.page || 1); // Get page number from query string (default to 1)
     const skip = (page - 1) * usersPerPage; // Calculate skip based on page and items per page
-    const users = await User.find().select("-email -password -role -__v").sort("_id").skip(skip).limit(usersPerPage);
+    const users = await User.find()
+      .select("-email -password -role -__v")
+      .sort("_id")
+      .skip(skip)
+      .limit(usersPerPage);
     // Process and return paginated users
     const totalUsers = await User.countDocuments(); // Count total users
     // Sacar un array de ids de los usuarios que sigo y me siguen
@@ -294,8 +303,8 @@ const update = async (req, res) => {
     if (userToUpDate.password) {
       let pwd = await bcrypt.hash(userToUpDate.password, 10);
       userToUpDate.password = pwd;
-    }else{
-      delete userToUpDate.password
+    } else {
+      delete userToUpDate.password;
     }
     // Si me llega la info cifrada
     // Buscar y actualizar
